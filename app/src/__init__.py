@@ -1,1 +1,1 @@
-from src.entities import *
+from src.enums import Direction
