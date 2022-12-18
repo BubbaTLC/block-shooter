@@ -1,6 +1,6 @@
 import pyglet
 from pyglet.window import key
-from entities import Entity, Player, Enemy
+from entities import Entity
 from views.board import Board
 
 
@@ -17,8 +17,6 @@ class Game(pyglet.window.Window):
         self.height = 500
 
         self.board: Board = None
-        self.player: Player = None
-        self.enemies: list[Enemy] = None
         self.score: int = 0
         self.game_objects: list[Entity] = []
 
@@ -35,36 +33,18 @@ class Game(pyglet.window.Window):
 
         self.game_objects = []
         self.board = Board(self.width, self.height, batch=self.batch)
-        self.player = Player(board=self.board,
-                             current_tile=self.board.tiles[0][0],
-                             batch=self.batch)
-        self.enemies = self.load_enemies(2, batch=self.batch)
+        self.game_objects = [self.board.player]  # + self.board.enemies
 
-        self.game_objects = [self.player] + self.enemies
-
-        for obj in self.game_objects:
-            for handler in obj.event_handlers:
-                self.push_handlers(handler)
-                self.event_stack_size += 1
-
-    def load_enemies(self,
-                     number_of_enemies: int,
-                     batch: pyglet.graphics.Batch = None) -> list[Entity]:
-        enemies = []
-        for _ in range(number_of_enemies):
-            offset = self.board.get_offset()
-            x, y, = self.board.get_random_tile()
-            new_enemy = Enemy(x + offset[0], y + offset[1],
-                              batch=batch)
-            enemies.append(new_enemy)
-        return enemies
+        for handler in self.board.event_handlers:
+            self.push_handlers(handler)
+            self.event_stack_size += 1
 
     def on_draw(self) -> None:
         self.clear()
         self.batch.draw()
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
-        self.player.handle_key_pressed(symbol)
+        self.board.handle_key_pressed(symbol)
 
     def update(self, delta_time: float) -> None:
         to_add = []
@@ -86,8 +66,8 @@ class Game(pyglet.window.Window):
         for to_remove in [
                 object for object in self.game_objects if object.dead
         ]:
-            if to_remove == self.player:
-                self.player.dead = True
+            if to_remove == self.board.player:
+                self.board.player.dead = True
 
             # Remove the object from any batches it is a member of
             to_remove.delete()
@@ -98,7 +78,7 @@ class Game(pyglet.window.Window):
         # Add new objects to the list
         self.game_objects.extend(to_add)
 
-        if self.player.dead:
+        if self.board.player.dead:
             self.new_board()
 
     def run(self) -> None:

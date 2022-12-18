@@ -13,3 +13,4 @@ class Enemy(Entity):
 
     def handle_collision_with(self, other_object) -> None:
         super(Enemy, self).handle_collision_with(other_object)
+

@@ -14,7 +14,6 @@ class Entity(pyglet.sprite.Sprite):
 
         # Tell the game handler about any event handlers
         # Only applies to things with keyboard/mouse input
-        self.event_handlers: list = []
 
         self.tile_x_index = 0
         self.tile_y_index = 0
@@ -42,4 +41,5 @@ class Entity(pyglet.sprite.Sprite):
     def handle_collision_with(self, other_object: None) -> None:
         # if not isinstance(other_object.__class__, self.__class__):
         if other_object.__class__ is not self.__class__:
+            print("COLLISION")
             self.dead = True
