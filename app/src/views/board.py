@@ -82,6 +82,18 @@ class Board():
         self.tile_width = int(available_width / self.tile_count_x)
         self.tile_height = int(available_height / self.tile_count_y)
 
+        # for row, row_val in enumerate(self.tile_positions[::-1],
+        #         start=len(self.tile_positions) - 1):
+        #     for col, col_val in enumerate(row_val):
+        #         x = col * self.tile_width + (col + 1) * self.padding
+        #         y = ((self.tile_count_y - 1 - row) * self.tile_height) + \
+        #             ((self.tile_count_y - 1 - row + 1) * self.padding)
+        #         self.tiles[col_val[0]][col_val[1]] = Tile(x=x,
+        #                                                   y=y,
+        #                                                   vector=col_val,
+        #                                                   height=self.tile_height,
+        #                                                   width=self.tile_width,
+        #                                                   batch=self.batch)
         for i in range(self.tile_count_y - 1, -1, -1):
             for j in range(self.tile_count_x):
                 x = j * self.tile_width + (j + 1) * self.padding
@@ -211,7 +223,7 @@ class Board():
 
             if not shortest_path:
                 return
-                
+
             new_tile = self.get_tile(
                 shortest_path[len(shortest_path) - 0 - 1][0],
                 shortest_path[len(shortest_path) - 0 - 1][1]
@@ -266,41 +278,3 @@ class Board():
 
         # If the queue is empty and the goal has not been found, return None
         return None
-
-    # def find_path(self, matrix: list[list], start: tuple) -> dict:
-    #     queue = deque([start])
-    #     path = {start: None}
-    #     visited: set = set()
-    #     return self.bfs(matrix, start, queue, path, visited)
-
-    # def bfs(self,
-    #         matrix: list[list],
-    #         start: tuple,
-    #         queue: deque,
-    #         path: dict,
-    #         visited: set) -> dict:
-    #     if not queue:
-    #         return {}
-
-    #     goal = self.get_player_tile().vector
-    #     curr_pos = queue.popleft()
-
-    #     if get_invert_matrix(curr_pos[0], curr_pos[1], matrix) == goal:
-    #         return path
-
-    #     visited.add(curr_pos)
-
-    #     rows = len(matrix)
-    #     cols = len(matrix[0])
-
-    #     for row_offset, col_offset in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #         new_row = curr_pos[0] + row_offset
-    #         new_col = curr_pos[1] + col_offset
-
-    #         if 0 <= new_row < rows and \
-    #             0 <= new_col < cols and \
-    #                 (new_row, new_col) not in visited:
-    #             queue.append((new_row, new_col))
-    #             path[(new_row, new_col)] = curr_pos
-
-    #     return self.bfs(matrix, start, queue, path, visited)
