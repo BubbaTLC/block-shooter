@@ -4,7 +4,10 @@ import math
 
 
 class Entity(pyglet.sprite.Sprite):
-    def __init__(self, *args: str, **kwargs: int) -> None:
+    def __init__(self,
+                 *args: str,
+                 vector: tuple = (0, 0),
+                 **kwargs: int) -> None:
         super(Entity, self).__init__(*args, **kwargs)
         # Flag to remove this object from the game_object list
         self.dead = False
@@ -17,6 +20,15 @@ class Entity(pyglet.sprite.Sprite):
 
         self.tile_x_index = 0
         self.tile_y_index = 0
+
+        self.vector = vector
+        self.x_index = vector[0]
+        self.y_index = vector[1]
+
+    def set_vector(self, vector: tuple) -> None:
+        self.vector = vector
+        self.x_index = vector[0]
+        self.y_index = vector[1]
 
     def update(self, clock_interval: float) -> None:
         pass
@@ -41,5 +53,4 @@ class Entity(pyglet.sprite.Sprite):
     def handle_collision_with(self, other_object: None) -> None:
         # if not isinstance(other_object.__class__, self.__class__):
         if other_object.__class__ is not self.__class__:
-            print("COLLISION")
             self.dead = True

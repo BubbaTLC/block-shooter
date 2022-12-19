@@ -11,9 +11,9 @@ class Bullet(Entity):
 
         pyglet.clock.schedule_once(self.die, 3)
 
-    def update(self, delta_interval: float) -> None:
-        self.x += self.velocity_x * delta_interval
-        self.y += self.velocity_y * delta_interval
+    def update(self, delta_time: float) -> None:
+        self.x += self.velocity_x * delta_time
+        self.y += self.velocity_y * delta_time
 
     def die(self, delta_time: float) -> None:
         self.dead = True

@@ -1,6 +1,6 @@
 import pyglet
 from pyglet.window import key
-from entities import Entity
+from entities import Entity, Enemy
 from views.board import Board
 
 
@@ -13,8 +13,8 @@ class Game(pyglet.window.Window):
         self.key_handler: key.KeyStateHandler = key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
 
-        self.width = 500
-        self.height = 500
+        self.width = 800
+        self.height = 800
 
         self.board: Board = None
         self.score: int = 0
@@ -31,9 +31,9 @@ class Game(pyglet.window.Window):
             self.pop_handlers()
             self.event_stack_size -= 1
 
-        self.game_objects = []
+        # self.game_objects = []
         self.board = Board(self.width, self.height, batch=self.batch)
-        self.game_objects = [self.board.player]  # + self.board.enemies
+        self.game_objects = self.board.game_objects
 
         for handler in self.board.event_handlers:
             self.push_handlers(handler)
@@ -47,8 +47,11 @@ class Game(pyglet.window.Window):
         self.board.handle_key_pressed(symbol)
 
     def update(self, delta_time: float) -> None:
+        # If entities create their own entities use
+        # this to add them to the game objects
         to_add = []
 
+        # Check for collisions
         for i in range(len(self.game_objects)):
             for j in range(i + 1, len(self.game_objects)):
                 obj_1 = self.game_objects[i]
@@ -71,15 +74,19 @@ class Game(pyglet.window.Window):
 
             # Remove the object from any batches it is a member of
             to_remove.delete()
-
-            # Remove the object from our list
-            self.game_objects.remove(to_remove)
+            self.board.kill(to_remove)
 
         # Add new objects to the list
+        # print(to_add)
         self.game_objects.extend(to_add)
+
+        self.board.check_for_endgame()
 
         if self.board.player.dead:
             self.new_board()
+        elif self.board.victory:
+            self.new_board()
+        # print(len(self.board.enemies))
 
     def run(self) -> None:
         pyglet.clock.schedule_interval(self.update, 1 / 120.0)
