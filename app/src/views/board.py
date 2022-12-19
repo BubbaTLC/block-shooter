@@ -7,7 +7,7 @@ from entities import Player, Enemy, Entity, Bullet
 
 
 def get_invert_matrix(x: int, y: int, matrix: list[list]) -> tuple:
-    return tuple(matrix[len(matrix) - y - 1][x])
+    return tuple(matrix[::-1][y][x])
 
 
 class Tile(pyglet.shapes.Rectangle):
@@ -66,16 +66,13 @@ class Board():
             self.move()
 
     def get_2d_matrix(self, rows: int, columns: int) -> list[list]:
-        return [
-            [(i, j) for i in range(columns)]
-            for j in range(rows - 1, -1, -1)
-        ]
+        return [[(j, i) for j in range(rows)] for i in range(columns)][::-1]
 
     def get_tile(self, x: int, y: int) -> Tile:
-        return self.tiles[self.tile_count_y - y - 1][x]
+        return self.tiles[::-1][y][x]
 
     def get_tile_positions(self, x: int, y: int) -> tuple:
-        return self.tile_positions[self.tile_count_y - y - 1][x]
+        return self.tile_positions[::-1][y][x]
 
     def create_tiles(self) -> None:
         total_padding_x = self.padding * (self.tile_count_x + 1)
@@ -135,10 +132,6 @@ class Board():
         if isinstance(entity, Bullet):
             self.game_objects.remove(entity)
 
-    def get_offset(self) -> tuple:
-        return (self.tile_width//2, self.tile_height//2)
-
-    def get_size(self) -> tuple:
         return (self.width, self.height)
 
     def get_player_tile(self) -> Tile:
@@ -231,7 +224,7 @@ class Board():
                 new_tile.enemy = enemy
                 enemy_tile.enemy = None
 
-    def find_path(self, matrix, start) -> dict:
+    def find_path(self, matrix: list[list], start: tuple) -> dict:
         # Set up the queue, path dictionary, and visited set
         queue = deque([start])
         path = {start: None}
